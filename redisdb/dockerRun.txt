@@ -1,0 +1,13 @@
+docker run -d --name redis-container -e REDIS_ALLOW_REMOTE_CONNECTIONS=yes -e TZ=Europe/Moscow -p 30073:6379 -e REDIS_PASSWORD=cyberpass ubuntu/redis:6.2-22.04_beta
+
+To debug the container:
+
+docker logs -f redis-container
+To get an interactive shell:
+
+docker exec -it redis-container /bin/bash
+This image also includes the redis-cli client for interactive container use:
+
+$ docker network create redis-network
+$ docker network connect redis-network redis-container
+$ docker run -it --rm --network redis-network ubuntu/redis:6.2-22.04_beta redis-cli -h redis-container
