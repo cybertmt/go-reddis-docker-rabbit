@@ -29,14 +29,16 @@ func main() {
 		DB:       redis_db_int,
 	})
 	subscriber := client.Subscribe("10.22.22.32_lastmsg")
+	defer subscriber.Close()
 
 	ch := subscriber.Channel()
 	log.Println("Comsumer started")
-	for msg := range ch {
-		log.Printf("Channel %s got message %s\n", msg.Channel, msg.Payload)
-		time.Sleep(30 * time.Second)
-	}
-	subscriber.Close()
+	go func() {
+		for msg := range ch {
+			log.Printf("Channel %s got message %s\n", msg.Channel, msg.Payload)
+			time.Sleep(30 * time.Second)
+		}
+	}()
 
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt)

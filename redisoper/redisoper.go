@@ -37,26 +37,29 @@ func main() {
 	msgChan := make(chan string, 1)
 
 	go consume(msgChan)
+	go func() {
+		for message := range msgChan {
 
-	for message := range msgChan {
+			err = client.Publish("10.22.22.32_lastmsg", message).Err()
+			if err != nil {
+				log.Println(err)
+			}
+			err = client.Set("10.22.22.32_lastmsg", message, 0).Err()
+			if err != nil {
+				log.Println(err)
+			}
+			log.Printf("Sent successfully: {10.22.22.32_lastmsg: %s} \n", message)
 
-		err = client.Publish("10.22.22.32_lastmsg", message).Err()
-		if err != nil {
-			log.Println(err)
 		}
-		err = client.Set("10.22.22.32_lastmsg", message, 0).Err()
-		if err != nil {
-			log.Println(err)
-		}
-		log.Printf("Sent successfully: {10.22.22.32_lastmsg: %s} \n", message)
 
-	}
+	}()
 
-	// val, err := client.Get("id1234").Result()
+	// val, err := client.Get("10.22.22.32_lastmsg").Result()
 	// if err != nil {
 	// 	log.Println(err)
 	// }
 	//log.Println(val)
+
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt)
 	<-signalCh
