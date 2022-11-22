@@ -1,4 +1,4 @@
-### publisher -> rabbit -> redisoper (channel) -> reddisdb <- (channel) consumer
+### publisher -> rabbit <- redisoper (channel) -> reddisdb <- (channel) consumer
 ###
 ```
 docker run -d --hostname my-rabbit --name some-rabbit -p 0.0.0.0:8087:15672 -p 0.0.0.0:5672:5672 rabbitmq:3-management 
